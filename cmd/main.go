@@ -14,6 +14,7 @@ func main() {
 	router.HandleFunc("/books", handlers.GetAllBooks).Methods(http.MethodGet)
 	router.HandleFunc("/books", handlers.AddBook).Methods(http.MethodPost)
 	router.HandleFunc("/books/{id}", handlers.Getbook).Methods(http.MethodGet)
+	router.HandleFunc("/books/{id}", handlers.UpdateBook).Methods(http.MethodPut)
 	log.Println("Api is running")
 	http.ListenAndServe(":4000", router)
 
