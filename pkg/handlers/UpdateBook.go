@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
-	"gorestapi/pkg/mocks"
+	"fmt"
 	"gorestapi/pkg/models"
 	"io/ioutil"
 	"log"
@@ -12,7 +12,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func UpdateBook(w http.ResponseWriter, r *http.Request) {
+func (h handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
 
@@ -23,21 +23,39 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln(err)
 	}
 
+	// var updatedBook models.Book
+	// json.Unmarshal(body, &updatedBook)
+
+	// for index, book := range mocks.Books {
+	// 	if book.Id == id {
+	// 		book.Title = updatedBook.Title
+	// 		book.Author = updatedBook.Author
+	// 		book.Desc = updatedBook.Desc
+
+	// 		mocks.Books[index] = book
+	// 		w.Header().Add("Content-Type", "application/json")
+	// 		w.WriteHeader(http.StatusOK)
+
+	// 		json.NewEncoder(w).Encode("Updated")
+	// 		break
+	// 	}
+	// }
 	var updatedBook models.Book
 	json.Unmarshal(body, &updatedBook)
 
-	for index, book := range mocks.Books {
-		if book.Id == id {
-			book.Title = updatedBook.Title
-			book.Author = updatedBook.Author
-			book.Desc = updatedBook.Desc
+	var book models.Book
 
-			mocks.Books[index] = book
-			w.Header().Add("Content-Type", "application/json")
-			w.WriteHeader(http.StatusOK)
-
-			json.NewEncoder(w).Encode("Updated")
-			break
-		}
+	if result := h.DB.First(&book, id); result.Error != nil {
+		fmt.Println(result.Error)
 	}
+
+	book.Title = updatedBook.Title
+	book.Author = updatedBook.Author
+	book.Desc = updatedBook.Desc
+
+	h.DB.Save(&book)
+
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode("Updated")
 }

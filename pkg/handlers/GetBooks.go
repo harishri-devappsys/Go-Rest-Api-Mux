@@ -2,12 +2,22 @@ package handlers
 
 import (
 	"encoding/json"
-	"gorestapi/pkg/mocks"
+	"fmt"
+	"gorestapi/pkg/models"
 	"net/http"
 )
 
-func GetAllBooks(w http.ResponseWriter, r *http.Request) {
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(mocks.Books)
+func (h handler) GetAllBooks(w http.ResponseWriter, r *http.Request) {
+	// w.Header().Add("Content-Type", "application/json")
+	// w.WriteHeader(http.StatusOK)
+	// json.NewEncoder(w).Encode(mocks.Books)
+	var books []models.Book
+
+    if result := h.DB.Find(&books); result.Error != nil {
+        fmt.Println(result.Error)
+    }
+
+    w.Header().Add("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK)
+    json.NewEncoder(w).Encode(books)
 }
